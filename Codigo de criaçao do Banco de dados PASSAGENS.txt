@@ -1,0 +1,99 @@
+CREATE DATABASE `passagens`;
+use passagens;
+
+CREATE TABLE `onibus` (
+  `codigo_onibus` int(11) NOT NULL AUTO_INCREMENT,
+  `placa_onibus` varchar(10) DEFAULT NULL,
+  `quantidade_assentos` int(11) NOT NULL,
+  PRIMARY KEY (`codigo_onibus`),
+  UNIQUE KEY `placa_onibus` (`placa_onibus`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE `rotas` (
+  `rotas_id` int(11) NOT NULL AUTO_INCREMENT,
+  `origem` varchar(150) NOT NULL,
+  `destino` varchar(150) NOT NULL,
+  PRIMARY KEY (`rotas_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=420 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE `viagem` (
+  `codigo_viagem` int(11) NOT NULL AUTO_INCREMENT,
+  `codigo_onibus` int(11) NOT NULL,
+  `data_saida` date NOT NULL,
+  `horario_saida` varchar(5) NOT NULL,
+  `data_chegada` date NOT NULL,
+  `horario_chegada` varchar(5) NOT NULL,
+  `valor_passagem` double NOT NULL,
+  `rota_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`codigo_viagem`),
+  KEY `fk_onibus` (`codigo_onibus`),
+  KEY `fkRotasViagem` (`rota_id`),
+  CONSTRAINT `fkRotasViagem` FOREIGN KEY (`rota_id`) REFERENCES `rotas` (`rotas_id`),
+  CONSTRAINT `fk_onibus` FOREIGN KEY (`codigo_onibus`) REFERENCES `onibus` (`codigo_onibus`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE `assento` (
+  `codigo_assento` int(11) NOT NULL AUTO_INCREMENT,
+  `numero_assento` int(11) NOT NULL,
+  `codigo_onibus` int(11) NOT NULL,
+  `disponibilidade` varchar(10) NOT NULL,
+  PRIMARY KEY (`codigo_assento`),
+  KEY `fk_assento` (`codigo_onibus`),
+  CONSTRAINT `fk_assento` FOREIGN KEY (`codigo_onibus`) REFERENCES `onibus` (`codigo_onibus`)
+) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE `passageiros` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `cpf` varchar(13) NOT NULL,
+  `nome` varchar(150) NOT NULL,
+  `sexo` varchar(1) NOT NULL,
+  `email` varchar(150) DEFAULT NULL,
+  `telefone` varchar(15) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `cpf` (`cpf`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE `passagem` (
+  `passagem_id` int(11) NOT NULL AUTO_INCREMENT,
+  `codigo_viagem` int(11) DEFAULT NULL,
+  `id_passageiro` int(11) DEFAULT NULL,
+  `codigo_assento` int(11) DEFAULT NULL,
+  PRIMARY KEY (`passagem_id`),
+  UNIQUE KEY `codigo_assento` (`codigo_assento`),
+  KEY `fk_viagem123` (`codigo_viagem`),
+  KEY `fk_passageiro123` (`id_passageiro`),
+  CONSTRAINT `fk_assento123` FOREIGN KEY (`codigo_assento`) REFERENCES `assento` (`codigo_assento`),
+  CONSTRAINT `fk_passageiro123` FOREIGN KEY (`id_passageiro`) REFERENCES `passageiros` (`id`),
+  CONSTRAINT `fk_viagem123` FOREIGN KEY (`codigo_viagem`) REFERENCES `viagem` (`codigo_viagem`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE `usuarios` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(200) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `senha` varchar(30) NOT NULL,
+  `telefone` varchar(10) NOT NULL,
+  `grupo` varchar(15) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE `vendedor` (
+  `vendedor_ID` int(11) NOT NULL AUTO_INCREMENT,
+  `usuario_id` int(11) DEFAULT NULL,
+  `nome` varchar(150) NOT NULL,
+  `passagem_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`vendedor_ID`),
+  KEY `fk_passagem` (`passagem_id`),
+  KEY `fk_usuarioID` (`usuario_id`),
+  CONSTRAINT `fk_passagem` FOREIGN KEY (`passagem_id`) REFERENCES `passagem` (`passagem_id`),
+  CONSTRAINT `fk_usuarioID` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
